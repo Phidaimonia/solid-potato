@@ -153,7 +153,7 @@ class DB:
         scraper = SrealityScraper()
         flatList = scraper.startScraping(maxItems=itemsToScrap)
         
-        self.log("Scraped items:", len(flatList))
+        self.log("Scraped items: " + str(len(flatList)))
         assert len(flatList) == itemsToScrap
         
         tupleFlatList = tuple(flatList)
@@ -162,7 +162,7 @@ class DB:
         self.loadScrapedFlats(tupleFlatList)      # save to DB
 
         
-        self.log("Scraped items:", len(tupleFlatList))
+        self.log("Saved to DB")
         self.log("\nDone")
     
 
