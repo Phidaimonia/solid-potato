@@ -138,22 +138,22 @@ class DB:
         """
         
         if not self.connected:
-            print("Must be connected to DB")
+            self.log("Must be connected to DB")
             return
             
-        print("Dropping tables")
+        self.log("Dropping tables")
         self.dropTables()
 
-        print("Recreating tables")
+        self.log("Recreating tables")
         self.createTables()
         
         
-        print("Starting scraping:\n")
+        self.log("Starting scraping:\n")
         
         scraper = SrealityScraper()
         flatList = scraper.startScraping(maxItems=itemsToScrap)
         
-        print("Scraped items:", len(flatList))
+        self.log("Scraped items:", len(flatList))
         assert len(flatList) == itemsToScrap
         
         tupleFlatList = tuple(flatList)
@@ -162,8 +162,8 @@ class DB:
         self.loadScrapedFlats(tupleFlatList)      # save to DB
 
         
-        print("Scraped items:", len(tupleFlatList))
-        print("\nDone")
+        self.log("Scraped items:", len(tupleFlatList))
+        self.log("\nDone")
     
 
 
