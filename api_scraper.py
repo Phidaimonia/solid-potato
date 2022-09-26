@@ -14,11 +14,6 @@ class SrealityScraper:
         imgList = []
         maxImages = 5
         
-        #for i in range(maxImages):
-        #    imgURL = str(JSONobj["_links"]["images"][i]["href"])
-        #    imgList.append(imgURL)
-                
-                
         for img in JSONobj["_links"]["images"]:
             imgList.append(str(img["href"]))
             
