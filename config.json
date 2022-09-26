@@ -1,0 +1,5 @@
+{
+    "DB": {
+        "db_connection": "postgresql://userName:TestPass123@db/dbName"
+    }
+}
