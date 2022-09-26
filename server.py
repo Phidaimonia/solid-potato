@@ -42,6 +42,8 @@ class RootHandler(tornado.web.RequestHandler):
     def get(self, page):
         # page starts with 0, always positive int or zero
         
+        imagesToShow = 3
+        
         startItem = int(page) * itemsPerPage
         endItem = startItem + itemsPerPage + 1                  
         
@@ -57,7 +59,7 @@ class RootHandler(tornado.web.RequestHandler):
         previousPageLink = "/" + str(max(0, int(page)-1))           # wont go below zero
         nextPageLink = "/" + str(min(lastPage, int(page)+1))        # wont go beyond the last page                
 
-        dictFlats = tuple(map(lambda x:{"title":x[0], "locality":x[1], "price":parsePrice(x[2]), "imgs":x[3][:3]}, flats))   # convert list to dictionary, only show 3 images
+        dictFlats = tuple(map(lambda x:{"title":x[0], "locality":x[1], "price":parsePrice(x[2]), "imgs":x[3][:imagesToShow]}, flats))   # convert list to dictionary
         
         self.render("Static/index.html", items=dictFlats, previousPageLink=previousPageLink, nextPageLink=nextPageLink)               # case sensitive
 
