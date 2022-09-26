@@ -5,7 +5,6 @@ import tornado.ioloop
 import tornado.web
 from tornado.ioloop import IOLoop
 from tornado.web import Application as TornadoApplication
-import tornado.template as T
 
 from db import DB
 
@@ -113,7 +112,7 @@ if __name__ == '__main__':
     app_log.setLevel(logging.DEBUG)
     
     app_log.debug("Waiting for DB to start...")
-    time.sleep(5)
+    time.sleep(10)
 
     database = None
     app_log.debug("Connecting to DB...")
@@ -121,9 +120,10 @@ if __name__ == '__main__':
     for i in range(3):  
         try:
             app_log.debug("Connection attempt {}...".format(i+1))
-            database = DB()
+            database = DB(logger = app_log.debug)
+            time.sleep(2)  
             
-            if database is None:
+            if database is None: 
                 continue
             
             if database.connected == True:
@@ -140,6 +140,14 @@ if __name__ == '__main__':
     if database.connected == False:
         app_log.error("Cant connect to DB")
         exit()
+        
+        
+        
+    database.createTables()                 # in case the DB is empty
+    if database.getItemsCount() == 0:
+        app_log.debug("DB is empty, starting scraping...")
+        database.scrapeAndSave(itemsToScrap=500)
+        app_log.debug("Scraping done")
 
 
     

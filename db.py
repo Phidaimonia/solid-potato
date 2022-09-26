@@ -1,7 +1,12 @@
-import psycopg2
+import psycopg2, json, time
 from psycopg2.extras import execute_values
-import json
 from api_scraper import SrealityScraper
+
+
+
+def listToSQL(lst):
+    return str(lst).replace('[', '{').replace(']', '}').replace('\'', '\"')
+
 
 
 class DB:
@@ -103,6 +108,7 @@ class DB:
         if not self.connected:
             self.log("D: send_command: Not connected, trying to reconnect")
             self.__connect()
+            time.sleep(2)
         
         if not self.connected:
             self.log("D: send_command: Reconnecting failed")
@@ -123,11 +129,44 @@ class DB:
             self.log("E: {0}.".format(str(err)))
             
         return 
+    
+    
+    def scrapeAndSave(self, itemsToScrap=500):
+        """
+        Resets the table
+        Scrapes and loads 500 items into database
+        """
+        
+        if not self.connected:
+            print("Must be connected to DB")
+            return
+            
+        print("Dropping tables")
+        self.dropTables()
+
+        print("Recreating tables")
+        self.createTables()
+        
+        
+        print("Starting scraping:\n")
+        
+        scraper = SrealityScraper()
+        flatList = scraper.startScraping(maxItems=itemsToScrap)
+        
+        print("Scraped items:", len(flatList))
+        assert len(flatList) == itemsToScrap
+        
+        tupleFlatList = tuple(flatList)
+        tupleFlatList = tuple(map(lambda x:(x["name"], x["locality"], x["price"], listToSQL(x["images"])), tupleFlatList))    # convert image URL list to SQL format
+
+        self.loadScrapedFlats(tupleFlatList)      # save to DB
+
+        
+        print("Scraped items:", len(tupleFlatList))
+        print("\nDone")
+    
 
 
-
-def listToSQL(lst):
-    return str(lst).replace('[', '{').replace(']', '}').replace('\'', '\"')
 
 
 
@@ -139,28 +178,5 @@ if __name__ == '__main__':       # tests
     db = DB()
     print("DB class created")
     
-    print("Dropping tables")
-    db.dropTables()
+    db.scrapeAndSave(itemsToScrap=500)
 
-    print("Recreating tables")
-    db.createTables()
-    
-    
-    print("Starting scraping:\n")
-    itemsToScrap = 500
-    
-    scraper = SrealityScraper()
-    flatList = scraper.startScraping(maxItems=itemsToScrap)
-    
-    print("Scraped items:", len(flatList))
-    assert len(flatList) == itemsToScrap
-    
-    tupleFlatList = tuple(flatList)
-    tupleFlatList = tuple(map(lambda x:(x["name"], x["locality"], x["price"], listToSQL(x["images"])), tupleFlatList))    # convert image URL list to SQL format
-
-    db.loadScrapedFlats(tupleFlatList)      # save to DB
-
-    
-    print("Scraped items:", len(tupleFlatList))
-    print("\nDone")
-   
