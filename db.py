@@ -11,7 +11,7 @@ def listToSQL(lst):
 
 class DB:
     """
-    A class used to instantiate a DB connection and save messages into a table 'Flats'
+    A class used to instantiate a DB connection and save scraped items into a table 'Flats'
     """
     
     def __init__(self, logger = print):
