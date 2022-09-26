@@ -17,7 +17,7 @@ class SrealityScraper:
         for img in JSONobj["_links"]["images"]:
             imgList.append(str(img["href"]))
             
-        return imgList
+        return imgList[:maxImages]
         
 
     @staticmethod 
